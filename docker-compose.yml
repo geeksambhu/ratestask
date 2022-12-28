@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ratestask
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./rates.sql:/docker-entrypoint-initdb.d/rates.sql
+
+  api:
+    build: .
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=1
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=ratestask
+      - DB_HOST=db
+      - DB_PORT=5432
+    ports:
+      - "1300:1300"
+    depends_on:
+      - db
